@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+    zipkin-mux:
+        image: zipkin-mux-${USER}
+        depends_on:
+            - zipkin-uswest1a
+            - zipkin-uswest1b
+        ports:
+            - 9411:9411
+
+    zipkin-uswest1a:
+        image: openzipkin/zipkin
+        depends_on:
+            - cassandra-uswest1a
+        environment:
+            - STORAGE_TYPE=cassandra3
+            - CASSANDRA_ENSURE_SCHEMA=false
+            - CASSANDRA_CONTACT_POINTS=cassandra-uswest1a
+
+    cassandra-uswest1a:
+        image: openzipkin/zipkin-cassandra
+
+    zipkin-uswest1b:
+        image: openzipkin/zipkin
+        depends_on:
+            - cassandra-uswest1b
+        environment:
+            - STORAGE_TYPE=cassandra3
+            - CASSANDRA_ENSURE_SCHEMA=false
+            - CASSANDRA_CONTACT_POINTS=cassandra-uswest1b
+
+    cassandra-uswest1b:
+        image: openzipkin/zipkin-cassandra
+
+# vim: ts=4 sw=4 et
