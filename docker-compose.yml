@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
     zipkin-mux:
@@ -10,7 +10,7 @@ services:
             - 9411:9411
 
     zipkin-uswest1a:
-        image: openzipkin/zipkin
+        image: openzipkin/zipkin:2.10.1
         depends_on:
             - cassandra-uswest1a
         environment:
@@ -22,7 +22,7 @@ services:
         image: openzipkin/zipkin-cassandra
 
     zipkin-uswest1b:
-        image: openzipkin/zipkin
+        image: openzipkin/zipkin:2.10.1
         depends_on:
             - cassandra-uswest1b
         environment:
@@ -32,5 +32,8 @@ services:
 
     cassandra-uswest1b:
         image: openzipkin/zipkin-cassandra
+
+    generator:
+        build: itest/
 
 # vim: ts=4 sw=4 et

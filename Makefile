@@ -14,7 +14,7 @@ $(DOCKER_COMPOSE):
 		-s`-`uname -m` -o $(DOCKER_COMPOSE)
 	chmod +x $(DOCKER_COMPOSE)
 
-run: cook-image
+run: cook-image $(DOCKER_COMPOSE)
 	$(DOCKER_COMPOSE) run --service-ports zipkin-mux
 
 clean:

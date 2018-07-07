@@ -1,8 +1,5 @@
 FROM ubuntu:bionic
 
-# public apt-get mirrors are terribly slow if your network supports ipv6
-# so we need to force apt to use ipv4
-# https://ubuntuforums.org/showthread.php?t=2349892
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
         build-essential \
@@ -30,6 +27,9 @@ RUN apt-get update && \
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.1/dumb-init_1.2.1_amd64.deb
 RUN dpkg -i dumb-init_*.deb
 
+RUN curl https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /usr/bin/wait-for-it.sh
+RUN chmod +x /usr/bin/wait-for-it.sh
+
 RUN apt-get clean
 
 # We directly pin both lua dependencies to allow for reproducible
@@ -44,14 +44,10 @@ WORKDIR /code
 
 RUN chown -R nobody:nogroup /code /usr/local/openresty
 
-# See https://github.com/moby/moby/issues/2259
-# This folder is used as a volume in itests
-RUN mkdir -p /var/log/nginx
-RUN chown -R nobody:nogroup /var/log/nginx
-
 ADD . /code
 USER nobody
 
-# Rewrite SIGTERM(15) to SIGQUIT(3) to let Nginx shut down gracefully
-CMD ["dumb-init", "/usr/local/openresty/nginx/sbin/nginx", "-c", "/code/nginx.conf"]
+CMD ["dumb-init", "/bin/sh", "-c", "wait-for-it.sh --timeout=90 cassandra-uswest1a:9042 -- \
+        wait-for-it.sh --timeout=90 cassandra-uswest1b:9042 -- \
+        /usr/local/openresty/nginx/sbin/nginx -c /code/nginx.conf"]
 # vim: syntax=dockerfile

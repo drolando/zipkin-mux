@@ -1,0 +1,3 @@
+backends:
+        - zipkin-uswest1a:9411
+        - zipkin-uswest1b:9411
