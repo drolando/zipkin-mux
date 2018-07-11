@@ -11,7 +11,7 @@ It exposes the same UI and API as Zipkin and takes care of querying all Zipkin c
 ## Why would I need this?
 If you're running a single Zipkin cluster with a single shared storage (most common case), you don't need this
 and should just use Zipkin directly. There are however use cases where it's useful to run multiple Zipkin
-clusters, each with its own backend.
+clusters, each with its own separate storage.
 
 For example, you might want to run a different Zipkin cluster per AWS Availability Zone. This is very useful if
 you're ingesting a lot of Zipkin spans since AWS charges you for cross AZ traffic (but intra AZ traffic is free).
@@ -86,3 +86,19 @@ back as response.
                                                   /api/v2/trace/foo│   └────────┘           └─────────┘   │
                                                                    │                                      │
                                                                    └──────────────────────────────────────┘
+
+## How to run it locally
+Running `make run` will start a local instance of zipkin-mux, together with 2 zipkin servers and related
+cassandra instance. Everything runs in `docker`, so you'll need to install it first.
+
+The UI can be accessed at `localhost:9411`, however by default there will be no traces in the storage. To
+generate one, run `make gen-trace`. This will create a single trace with 4 spans and save 2 of those in each
+zipkin instance to simulate different clusters.
+
+You'll then be able to search for the trace in the UI and visualize it.
+
+## Why openresty and not python, java, ruby, etc?
+This service code is very simple and not CPU intensive. Most of its tasks are to proxy requests around, which
+nginx is great at. Also, nginx & openresty use an async event based engine that allows it to process many
+requests in parallel with minimal overhead. This means you could run zipkin-mux in production with a fraction
+of the memory and cpu requirements of a similar java service.
