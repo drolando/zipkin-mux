@@ -17,6 +17,10 @@ $(DOCKER_COMPOSE):
 run: cook-image $(DOCKER_COMPOSE)
 	$(DOCKER_COMPOSE) run --service-ports zipkin-mux
 
+
+gen-trace: $(DOCKER_COMPOSE)
+	$(DOCKER_COMPOSE) run generator python3 -m generate_traces
+
 clean:
 	$(DOCKER_COMPOSE) kill
 	$(DOCKER_COMPOSE) rm -fs

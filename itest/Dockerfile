@@ -25,4 +25,4 @@ WORKDIR /code
 ADD . /code
 RUN chmod 777 -R /code
 
-ENTRYPOINT ["wait-for-it.sh", "--timeout=15", "zipkin-mux:9411", "--"]
+ENTRYPOINT ["wait-for-it.sh", "--timeout=15", "zipkin-uswest1a:9411", "--"]
