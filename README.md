@@ -60,8 +60,10 @@ matter which one you choose as they'll hopefully all be of the same version.
                                                                    └──────────────────────────────────────┘
                                                                                                            
 In case of API requests though, we need to add some extra logic. All api calls start with `/zipkin/api/`, so
-it's very easy to intercept them. When we receive one of those we need to iterate over all the different
-clusters, pick one server from each and send the same request to it.
+it's very easy to intercept them. When we receive one of those we need to 
+[iterate over](https://github.com/drolando/zipkin-mux/blob/master/lua/services.lua#L45) all the different
+clusters, pick one server from each and
+[send the same request](https://github.com/drolando/zipkin-mux/blob/master/lua/services.lua#L23) to it.
 
 All read API endpoints return a JSON list of objects, which makes it super easy to merge the responses. We
 only need to json decode them, append everything to the same result list, re-encode that list and send it
